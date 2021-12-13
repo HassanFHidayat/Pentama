@@ -66,7 +66,7 @@ include './template/navbar.php';
   ";
  $no = 1;
  while ($dt = mysql_fetch_array($sql)) {
-  $jumlah= ($dt['kriteria1'])+($dt['kriteria2'])+($dt['kriteria3'])+($dt['kriteria4']);
+  $jumlah= ($dt['kriteria1'])+($dt['kriteria2'])+($dt['kriteria3'])+($dt['kriteria4'])+($dt['kriteria5']);
   echo "<tr>
    <td style='text-align:center;'>$no</td>
    <td>".getNama($dt['id_alternatif'])."</td>
@@ -74,6 +74,7 @@ include './template/navbar.php';
    <td style='text-align:center;'>$dt[kriteria2]</td>
    <td style='text-align:center;'>$dt[kriteria3]</td>
    <td style='text-align:center;'>$dt[kriteria4]</td>
+   <td style='text-align:center;'>$dt[kriteria5]</td>
    <td style='text-align:center;'>$jumlah</td>
   </tr>";
  $no++;
@@ -87,10 +88,12 @@ include './template/navbar.php';
       min(kriteria2) as minK2,
       min(kriteria3) as minK3,
       min(kriteria4) as minK4,
+      min(kriteria5) as minK5,
       max(kriteria1) as maxK1,
       max(kriteria2) as maxK2,
       max(kriteria3) as maxK3,
-      max(kriteria4) as maxK4 
+      max(kriteria4) as maxK4,
+      max(kriteria5) as maxK5 
    FROM tb_nilai");
  $atribut = mysql_fetch_array($cr);
 
@@ -124,6 +127,7 @@ $k1 = "";
 $k2 = "";
 $k3 = "";
 $k4 = "";
+$k5 = "";
 
 $qk = mysql_query("SELECT * FROM kriteria");
 while ($row = mysql_fetch_array($qk)) {
@@ -136,6 +140,8 @@ while ($row = mysql_fetch_array($qk)) {
         $k3 = "cost";
       } elseif ($row['id_kriteria'] == 4) {
         $k4 = "cost";
+      } elseif ($row['id_kriteria'] == 5) {
+        $k5 = "cost";
       }
     } else {
       if ($row['id_kriteria'] == 1) {
@@ -146,6 +152,8 @@ while ($row = mysql_fetch_array($qk)) {
         $k3 = "benefit";
       } elseif ($row['id_kriteria'] == 4) {
         $k4 = "benefit";
+      } elseif ($row['id_kriteria'] == 5) {
+        $k5 = "benefit";
       }
     }
 }
@@ -183,7 +191,14 @@ while ($row = mysql_fetch_array($qk)) {
           echo round($dt2['kriteria4']/$atribut['maxK4'],2);
         }
    echo "</td>
-  </tr>";
+   <td style='text-align:center;'>";
+       if ($k5 == "cost") {
+         echo round($dt2['kriteria5']/$atribut['minK5'],2);
+       } else {
+         echo round($dt2['kriteria5']/$atribut['maxK5'],2);
+       }
+  echo "</td>
+ </tr>";
  $no++;
  }
  echo "</tbody></table>";
@@ -221,6 +236,7 @@ while ($b = mysql_fetch_array($qb)) {
   $normalisasi2 = 0;
   $normalisasi3 = 0;
   $normalisasi4 = 0;
+  $normalisasi5 = 0;
 
 if ($k1 == "cost") {
     $normalisasi1 = $dt3['kriteria1']/$atribut['minK1'];
@@ -242,12 +258,18 @@ if ($k4 == "cost") {
 } else {
   $normalisasi4 = $dt3['kriteria4']/$atribut['maxK4'];
 }
+if ($k5 == "cost") {
+  $normalisasi5 = $dt3['kriteria5']/$atribut['minK5'];
+} else {
+  $normalisasi5 = $dt3['kriteria5']/$atribut['maxK5'];
+}
 
 $poin= round( 
    ($normalisasi1*$bobotArray[1])+
    ($normalisasi2*$bobotArray[2])+
    ($normalisasi3*$bobotArray[3])+
-   ($normalisasi4*$bobotArray[4]),2);
+   ($normalisasi4*$bobotArray[4])+
+   ($normalisasi5*$bobotArray[5]),2);
    
   // $poin= round(
   //  (($dt3['kriteria1']/$atribut['minK1'])*$bobotArray[1])+
